@@ -259,7 +259,7 @@
       positioning: "bottom-center",
       offset: [0, -18],
       stopEvent: true,
-      autoPan: reduced ? false : { animation: { duration: 250 }, margin: 24 }
+      autoPan: false
     });
     map.addOverlay(overlay);
 
@@ -273,7 +273,7 @@
         writeParams();
         return;
       }
-      selectStory(feature.get("storyId"));
+      selectStory(feature.get("storyId"), "marker");
     });
 
     map.on("pointermove", function (event) {
@@ -296,7 +296,7 @@
     fitVisible();
 
     if (storyParam && storyById(storyParam)) {
-      window.setTimeout(function () { selectStory(storyParam); }, reduced ? 0 : 250);
+      window.setTimeout(function () { selectStory(storyParam, "marker"); }, reduced ? 0 : 250);
     }
 
     window.addEventListener("resize", function () {
@@ -411,22 +411,36 @@
       return currentResolution * Math.pow(2, currentZoom - zoom);
     }
 
-    function nudge(coord, zoom) {
+    function nudge(coord, zoom, forPopup) {
       var resolution = resolutionAt(zoom);
       if (mobileQuery.matches) {
         var mapRect = map.getTargetElement().getBoundingClientRect();
         var panelRect = panel.getBoundingClientRect();
         var visibleHeight = Math.min(panelRect.top, mapRect.bottom) - mapRect.top;
         visibleHeight = Math.max(visibleHeight, 120);
-        var shiftUp = (mapRect.height / 2) - (visibleHeight / 2);
-        if (shiftUp < 0) shiftUp = 0;
-        return [coord[0], coord[1] - shiftUp * resolution];
+        var desiredY = visibleHeight / 2;
+        if (forPopup) {
+          var popupHeight = popup.offsetHeight || 240;
+          var aboveMarker = popupHeight + 18;
+          desiredY = (visibleHeight / 2) + (aboveMarker / 2);
+          var minY = Math.min(aboveMarker + 8, visibleHeight - 36);
+          var maxY = Math.max(minY, visibleHeight - 36);
+          desiredY = Math.max(minY, Math.min(desiredY, maxY));
+        }
+        var delta = desiredY - (mapRect.height / 2);
+        return [coord[0], coord[1] + delta * resolution];
       }
       var panelWidth = panel.getBoundingClientRect().width;
       return [coord[0] - (panelWidth / 2) * resolution, coord[1] + 70 * resolution];
     }
 
-    function selectStory(id) {
+    function showPopup(story, coord) {
+      popup.hidden = false;
+      popup.innerHTML = popupHtml(story);
+      overlay.setPosition(coord);
+    }
+
+    function selectStory(id, origin) {
       var story = storyById(id);
       var feature = source.getFeatureById(id);
       if (!story || !feature) return;
@@ -435,24 +449,34 @@
       renderRows();
       var coord = feature.getGeometry().getCoordinates();
       var mobile = mobileQuery.matches;
+      var fromMarker = origin === "marker";
       var targetZoom = Math.max(view.getZoom() || 5, mobile ? 6.2 : 7.1);
-      if (mobile) {
+
+      if (mobile && fromMarker) {
+        setCollapsed(true);
+        showPopup(story, coord);
+        view.animate({
+          center: nudge(coord, targetZoom, true),
+          zoom: targetZoom,
+          duration: duration
+        });
+      } else if (mobile) {
         clearPopup();
         setCollapsed(false);
-      }
-      view.animate({
-        center: nudge(coord, targetZoom),
-        zoom: targetZoom,
-        duration: duration
-      });
-
-      if (mobile) {
+        view.animate({
+          center: nudge(coord, targetZoom, false),
+          zoom: targetZoom,
+          duration: duration
+        });
         var row = list.querySelector('.story-row[data-id="' + id + '"]');
         if (row && row.scrollIntoView) row.scrollIntoView({ block: "nearest" });
       } else {
-        popup.hidden = false;
-        popup.innerHTML = popupHtml(story);
-        overlay.setPosition(coord);
+        showPopup(story, coord);
+        view.animate({
+          center: nudge(coord, targetZoom, false),
+          zoom: targetZoom,
+          duration: duration
+        });
       }
       writeParams();
     }
