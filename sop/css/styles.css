@@ -1108,6 +1108,42 @@ button {
   }
 }
 
+@media (max-height: 520px) {
+  .panel {
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .panel__intro {
+    position: static;
+    background: transparent;
+  }
+
+  .panel__heading-row {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    margin: -16px -18px 0;
+    padding: 16px 18px 8px;
+    background: rgba(250, 247, 242, 0.98);
+  }
+
+  .panel__body {
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .story-list {
+    flex: none;
+    min-height: auto;
+    max-height: none;
+    overflow: visible;
+    overscroll-behavior: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *,
