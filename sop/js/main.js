@@ -404,11 +404,23 @@
       popup.hidden = true;
     }
 
-    function nudge(coord) {
-      var resolution = view.getResolution() || 1;
+    function resolutionAt(zoom) {
+      var currentZoom = view.getZoom();
+      var currentResolution = view.getResolution();
+      if (currentZoom == null || !currentResolution) return currentResolution || 1;
+      return currentResolution * Math.pow(2, currentZoom - zoom);
+    }
+
+    function nudge(coord, zoom) {
+      var resolution = resolutionAt(zoom);
       if (mobileQuery.matches) {
-        var lift = Math.min(window.innerHeight * 0.16, 140) * resolution;
-        return [coord[0], coord[1] + lift];
+        var mapRect = map.getTargetElement().getBoundingClientRect();
+        var panelRect = panel.getBoundingClientRect();
+        var visibleHeight = Math.min(panelRect.top, mapRect.bottom) - mapRect.top;
+        visibleHeight = Math.max(visibleHeight, 120);
+        var shiftUp = (mapRect.height / 2) - (visibleHeight / 2);
+        if (shiftUp < 0) shiftUp = 0;
+        return [coord[0], coord[1] - shiftUp * resolution];
       }
       var panelWidth = panel.getBoundingClientRect().width;
       return [coord[0] - (panelWidth / 2) * resolution, coord[1] + 70 * resolution];
@@ -422,15 +434,19 @@
       refreshStyles();
       renderRows();
       var coord = feature.getGeometry().getCoordinates();
+      var mobile = mobileQuery.matches;
+      var targetZoom = Math.max(view.getZoom() || 5, mobile ? 6.2 : 7.1);
+      if (mobile) {
+        clearPopup();
+        setCollapsed(false);
+      }
       view.animate({
-        center: nudge(coord),
-        zoom: Math.max(view.getZoom() || 5, mobileQuery.matches ? 6.2 : 7.1),
+        center: nudge(coord, targetZoom),
+        zoom: targetZoom,
         duration: duration
       });
 
-      if (mobileQuery.matches) {
-        clearPopup();
-        setCollapsed(false);
+      if (mobile) {
         var row = list.querySelector('.story-row[data-id="' + id + '"]');
         if (row && row.scrollIntoView) row.scrollIntoView({ block: "nearest" });
       } else {
