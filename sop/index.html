@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Map — Indigenous Stories of Philosophy</title>
+  <meta name="description" content="A research atlas of Indigenous stories of philosophy. Each place mark opens a story.">
+  <meta name="theme-color" content="#1e3a2b">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='16' fill='none' stroke='%231e3a2b' stroke-width='1.5'/%3E%3Ccircle cx='24' cy='13' r='3' fill='%23a6843d'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@9.2.4/ol.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-map" data-page="map">
+  <a class="skip" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" viewBox="0 0 36 36" aria-hidden="true">
+          <circle cx="18" cy="18" r="16.25" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <path d="M6.5 23.5c3.4-5.2 6.6-5.4 9.6-.6 2.4 3.8 5 4.4 8 .8 1.8-2.2 3.4-3.2 5.4-3.2" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+          <circle cx="25.2" cy="12.2" r="2.15" fill="#A6843D"/>
+        </svg>
+        <span class="brand__text">
+          <span class="brand__kicker">Indigenous</span>
+          <span class="brand__title">Stories of Philosophy</span>
+          <span class="brand__tag" aria-hidden="true">Where philosophy begins with the land</span>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+        <span class="nav-toggle__icon"></span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="Primary">
+        <a href="index.html" aria-current="page">Map</a>
+        <a href="stories.html">Stories</a>
+        <a href="about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content" class="atlas">
+    <div id="map" class="atlas__map" role="region" aria-label="Map of stories. The same stories are listed in the panel."></div>
+    <aside class="panel" id="panel" aria-label="Stories on the map">
+      <div class="panel__intro">
+        <div class="panel__heading-row">
+          <div>
+            <p class="eyebrow">Research atlas</p>
+            <h1>Stories held in place</h1>
+          </div>
+          <button class="panel__toggle" id="panel-toggle" type="button" aria-expanded="true" aria-controls="panel-body">
+            <span class="sr-only">Hide stories</span>
+            <span class="chevron" aria-hidden="true"></span>
+          </button>
+        </div>
+        <p class="lede">Each mark is a story tied to a place. Follow a theme, or open any story in full.</p>
+        <p class="sample-note">Sample places and text, so the layout can be reviewed before the research is published.</p>
+        <p class="key"><span class="swatch" aria-hidden="true"></span> A gold point is a story in this collection.</p>
+      </div>
+      <div class="panel__body" id="panel-body">
+        <div class="chips" id="map-chips" role="group" aria-label="Themes"></div>
+        <div class="panel__tools">
+          <p id="count" aria-live="polite">8 stories</p>
+          <button class="text-button" id="reset-map" type="button">Whole map</button>
+        </div>
+        <div class="story-list" id="story-list"></div>
+        <div class="panel__foot">
+          <a class="text-link" href="stories.html">View the full list</a>
+          <img class="panel__logo" src="images/ua-logo-green.svg" alt="University of Alberta">
+        </div>
+      </div>
+    </aside>
+    <div id="popup" class="popup" hidden></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/ol@9.2.4/dist/ol.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
